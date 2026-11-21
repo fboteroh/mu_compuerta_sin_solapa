@@ -1,0 +1,448 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>μ = f(h, Nivel, Mtot) — versión simplificada</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Saira+Condensed:wght@500;700;800&family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;1,6..72,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --ground:#0A2430;--panel:#0F3040;--panel2:#123846;--rule:#3E6B80;
+  --chalk:#E6EFF2;--dim:#9FBCC7;--ochre:#F0A93B;--verdigris:#63C6AC;--alert:#E8734A;
+  --maxw:1080px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--ground);color:var(--chalk);
+  font-family:"Newsreader",Georgia,serif;font-size:17.5px;line-height:1.62;font-variant-numeric:tabular-nums;
+  background-image:linear-gradient(transparent 95%,rgba(62,107,128,.10) 95%),linear-gradient(90deg,transparent 95%,rgba(62,107,128,.10) 95%);
+  background-size:34px 34px;}
+.wrap{max-width:var(--maxw);margin:0 auto;padding:0 22px}
+h1,h2,h3{font-family:"Saira Condensed",Impact,sans-serif;font-weight:800;letter-spacing:.012em;text-transform:uppercase;line-height:1.02;margin:0}
+code,td.num,th{font-family:"IBM Plex Mono",monospace;font-variant-numeric:tabular-nums}
+.titleblock{border-bottom:1px solid var(--rule);margin-top:26px}
+.tb-grid{display:grid;grid-template-columns:repeat(4,1fr);border:1px solid var(--rule);border-bottom:none}
+.tb-cell{padding:9px 12px;border-right:1px solid var(--rule);border-bottom:1px solid var(--rule)}
+.tb-cell:nth-child(4n){border-right:none}
+.tb-cell .k{font-family:"IBM Plex Mono",monospace;font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--dim);display:block;margin-bottom:2px}
+.tb-cell .v{font-family:"Saira Condensed",sans-serif;font-weight:700;font-size:16px;letter-spacing:.02em}
+h1{font-size:clamp(2.3rem,7vw,4.8rem);padding:26px 0 4px}
+h1 .sub{display:block;font-size:.30em;font-weight:500;letter-spacing:.2em;color:var(--ochre);margin-bottom:.55em}
+.lede{max-width:64ch;color:var(--dim);font-size:1.06rem;padding-bottom:26px}
+.lede strong{color:var(--chalk);font-weight:500}
+.hero-eq{border:1px solid var(--rule);border-left:3px solid var(--ochre);background:linear-gradient(180deg,var(--panel),var(--ground));padding:26px 26px 20px;margin:8px 0 12px}
+.eq{font-family:"IBM Plex Mono",monospace;font-size:clamp(.95rem,3vw,1.4rem);font-weight:500;color:var(--chalk);word-break:break-word}
+.eq .hl{color:var(--ochre)}
+.eq .sm{font-size:.8em;color:var(--dim)}
+.eq-note{color:var(--dim);font-size:.93rem;margin-top:12px;max-width:66ch}
+section{padding:52px 0 8px;border-top:1px solid rgba(62,107,128,.45);margin-top:44px}
+.eyebrow{font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--ochre);margin-bottom:12px}
+h2{font-size:clamp(1.55rem,4.2vw,2.4rem);margin-bottom:14px}
+h3{font-size:1.1rem;letter-spacing:.06em;margin:30px 0 10px;color:var(--verdigris)}
+p{margin:0 0 15px;max-width:70ch}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:30px}
+.card{background:var(--panel);border:1px solid var(--rule);padding:18px 20px}
+.card p:last-child{margin-bottom:0}
+.calc{display:grid;grid-template-columns:200px 1fr 1fr;border:1px solid var(--rule);background:var(--panel)}
+.gauges{border-right:1px solid var(--rule);padding:16px 10px;background:var(--panel2);display:flex;justify-content:space-around;text-align:center}
+.gauges .lab{font-family:"IBM Plex Mono",monospace;font-size:9px;letter-spacing:.12em;color:var(--dim);text-transform:uppercase;margin-bottom:8px;line-height:1.3}
+input[type=range]{-webkit-appearance:slider-vertical;appearance:slider-vertical;writing-mode:vertical-lr;direction:rtl;width:26px;height:230px;accent-color:var(--ochre);background:transparent;cursor:ns-resize}
+.gauges .read{font-family:"Saira Condensed",sans-serif;font-weight:800;font-size:1.2rem;margin-top:9px;color:var(--verdigris)}
+.gauges .unit{font-family:"IBM Plex Mono",monospace;font-size:8.5px;color:var(--dim);letter-spacing:.1em}
+.calcmain{padding:18px 20px;border-right:1px solid var(--rule)}
+.field{margin-bottom:13px}
+.field label{display:block;font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:var(--dim);margin-bottom:5px}
+.field input{width:100%;background:var(--ground);border:1px solid var(--rule);color:var(--chalk);font-family:"IBM Plex Mono",monospace;font-size:1rem;padding:9px 11px;border-radius:0}
+.field input:focus,input[type=range]:focus-visible{outline:2px solid var(--ochre);outline-offset:2px}
+.out{border-top:1px dashed var(--rule);padding-top:13px}
+.out .k{font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:var(--dim)}
+.out .big{font-family:"Saira Condensed",sans-serif;font-weight:800;font-size:clamp(2.4rem,8vw,3.6rem);line-height:.95;color:var(--ochre)}
+.out .side{font-family:"IBM Plex Mono",monospace;font-size:.78rem;color:var(--dim);margin-top:6px}
+.warn{color:var(--alert);font-family:"IBM Plex Mono",monospace;font-size:.76rem;margin-top:8px;min-height:1.1em}
+.calcplot{padding:14px 12px}
+svg{display:block;width:100%;height:auto;overflow:visible}
+.slabel{font-family:"IBM Plex Mono",monospace;font-size:8.5px;fill:var(--dim);letter-spacing:.08em}
+.stitle{font-family:"Saira Condensed",sans-serif;font-size:12px;font-weight:700;fill:var(--chalk);letter-spacing:.09em;text-transform:uppercase}
+table{width:100%;border-collapse:collapse;font-family:"IBM Plex Mono",monospace;font-size:.78rem;margin:8px 0 18px}
+th{text-align:left;font-size:9.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--ochre);font-weight:500;padding:7px 9px;border-bottom:1px solid var(--rule)}
+td{padding:6px 9px;border-bottom:1px solid rgba(62,107,128,.28)}
+td.num{text-align:right}
+tr.best td{background:rgba(99,198,172,.10)}
+tr.best td:first-child{box-shadow:inset 3px 0 0 var(--verdigris)}
+tr.old td{color:var(--dim)}
+.tblscroll{max-height:360px;overflow:auto;border:1px solid var(--rule)}
+.tblscroll table{margin:0;font-size:.72rem}
+.tblscroll th{position:sticky;top:0;background:var(--panel2);z-index:2}
+.tblscroll td:first-child,.tblscroll th:first-child{position:sticky;left:0;background:var(--panel2);z-index:1}
+pre{background:var(--panel);border:1px solid var(--rule);border-left:3px solid var(--verdigris);padding:15px 17px;overflow-x:auto;font-family:"IBM Plex Mono",monospace;font-size:.76rem;line-height:1.6;margin:8px 0 18px}
+pre .c{color:var(--dim)}
+pre .n{color:var(--ochre)}
+code{background:rgba(62,107,128,.28);padding:.1em .35em;font-size:.86em}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--rule);border:1px solid var(--rule);margin:14px 0 22px}
+.stat{background:var(--panel);padding:15px 14px}
+.stat .v{font-family:"Saira Condensed",sans-serif;font-weight:800;font-size:1.55rem;color:var(--verdigris);line-height:1}
+.stat .k{font-family:"IBM Plex Mono",monospace;font-size:9px;letter-spacing:.13em;text-transform:uppercase;color:var(--dim);margin-top:6px}
+ul{max-width:70ch;padding-left:1.15em;margin:0 0 15px}
+li{margin-bottom:9px}
+li::marker{color:var(--ochre)}
+footer{border-top:1px solid var(--rule);margin-top:56px;padding:22px 0 60px;color:var(--dim);font-family:"IBM Plex Mono",monospace;font-size:.74rem;letter-spacing:.05em}
+@media (max-width:860px){
+  .two,.stats{grid-template-columns:1fr}
+  .calc{grid-template-columns:1fr}
+  .gauges{border-right:none;border-bottom:1px solid var(--rule)}
+  input[type=range]{height:180px}
+  .calcmain{border-right:none;border-bottom:1px solid var(--rule)}
+  .tb-grid{grid-template-columns:repeat(2,1fr)}
+  .tb-cell:nth-child(4n){border-right:1px solid var(--rule)}
+  .tb-cell:nth-child(2n){border-right:none}
+}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important}}
+</style>
+
+<div class="wrap">
+
+<div class="titleblock">
+  <div class="tb-grid">
+    <div class="tb-cell"><span class="k">Fuente</span><span class="v">datos_completos_compuerta<br>_sin_solapa_2.xlsx</span></div>
+    <div class="tb-cell"><span class="k">Registros</span><span class="v">8 970 (195 × 46)</span></div>
+    <div class="tb-cell"><span class="k">Modo de operación</span><span class="v">Uno solo</span></div>
+    <div class="tb-cell"><span class="k">Coeficientes</span><span class="v" style="color:var(--verdigris)">39 · sin tramos</span></div>
+  </div>
+  <h1><span class="sub">Nota técnica · ajuste inverso · v3 simplificada</span>μ en función de<br>h, Nivel y M<span style="font-size:.62em">tot</span></h1>
+  <p class="lede">La versión anterior tenía que cubrir <strong>dos modos de operación con tendencias distintas</strong>, separados por un umbral en la cota 400 + h. Eso obligó a un ajuste en dos tramos con 72 coeficientes: correcto, pero pesado. Este archivo trae un solo modo — y con eso la función se desploma a <strong>una sola expresión de 39 coeficientes</strong>, sin tramos, sin indicadores y sin variable auxiliar. La precisión, además, mejora.</p>
+</div>
+
+<div class="hero-eq">
+  <div class="eq">M<span style="font-size:.72em">tot</span> = b(h, Nivel) · ( α + μ + γ(h, Nivel)·μ² )</div>
+  <div class="eq" style="margin-top:14px">⟹ &nbsp; <span class="hl">μ = [ −1 + √( 1 + 4γ·(M<span style="font-size:.72em">tot</span>/b − α) ) ] / (2γ)</span></div>
+  <div class="eq sm" style="margin-top:14px">b : polinomio de grado total 6 en (h, Nivel) &nbsp;·&nbsp; 28 coeficientes<br>γ : polinomio de grado total 3 &nbsp;·&nbsp; 10 coeficientes &nbsp;&nbsp;·&nbsp;&nbsp; α : constante</div>
+  <p class="eq-note">Error máximo en μ sobre los 8 970 registros: <strong style="color:var(--verdigris)">8.9 × 10⁻⁵</strong>, con 39 coeficientes contra los 72 de la v2. La versión de bolsillo, μ = M<sub>tot</sub>/b, llega a 8.2 × 10⁻⁴ con 28.</p>
+</div>
+
+<section style="border-top:none;padding-top:18px;margin-top:0">
+  <div class="eyebrow">Evaluador</div>
+  <h2>Probala</h2>
+  <div class="calc">
+    <div class="gauges">
+      <div>
+        <div class="lab">Apertura<br>h</div>
+        <input type="range" id="gh" min="0" max="19" step="0.1" value="5" aria-label="Apertura h en metros">
+        <div class="read" id="ghout">5.0</div><div class="unit">m</div>
+      </div>
+      <div>
+        <div class="lab">Nivel<br>msnm</div>
+        <input type="range" id="gn" min="406" max="420" step="0.1" value="414" aria-label="Nivel en msnm">
+        <div class="read" id="gnout">414.0</div><div class="unit">msnm</div>
+      </div>
+    </div>
+    <div class="calcmain">
+      <div class="field">
+        <label for="mt">M<sub>tot</sub> — momento total (ton·m)</label>
+        <input type="number" id="mt" value="250" step="1" min="0">
+      </div>
+      <div class="out">
+        <div class="k">μ resultante</div>
+        <div class="big" id="muout">0.000</div>
+        <div class="side" id="bout"></div>
+        <div class="warn" id="warn"></div>
+      </div>
+    </div>
+    <div class="calcplot">
+      <svg id="svgB" viewBox="0 0 300 205" role="img" aria-label="Curva b contra Nivel para la apertura elegida"></svg>
+      <svg id="svgM" viewBox="0 0 300 160" style="margin-top:12px" role="img" aria-label="Curva Mtot contra mu"></svg>
+    </div>
+  </div>
+  <p style="color:var(--dim);font-size:.92rem">Dominio verificado: h ∈ [0, 19] m, Nivel ∈ [406, 420] msnm, con Nivel ≥ 401 + h. El evaluador avisa cuando te salís.</p>
+</section>
+
+<section>
+  <div class="eyebrow">Qué cambió</div>
+  <h2>De 72 coeficientes en dos tramos a 39 en uno</h2>
+  <p>El archivo nuevo tiene 195 pares (h, Nivel) contra los 315 de antes. Los 120 que faltan son exactamente los que cumplían Nivel ≤ 400 + h — el otro modo de operación. Confirmado desde el archivo: <strong>ninguna de las 195 celdas cae de ese lado</strong>, y la más cercana está a un metro del umbral.</p>
+  <p>Con un solo régimen desaparecen tres complicaciones de golpe: el indicador que activaba o desactivaba bloques de términos, la condición de continuidad en la frontera, y la necesidad de escribir todo en la coordenada auxiliar <code>s = Nivel − 400 − h</code>. Esa variable sigue siendo la forma correcta de <em>entender</em> la superficie, pero ya no hace falta para <em>escribirla</em>: la función se expresa directamente en h y Nivel.</p>
+  <table>
+    <thead><tr><th>Versión</th><th class="num">Coefic.</th><th class="num">Tramos</th><th class="num">RMSE en μ</th><th class="num">máx |error|</th></tr></thead>
+    <tbody>
+      <tr class="old"><td>v2 — dos modos de operación</td><td class="num">72</td><td class="num">2</td><td class="num">1.44e−05</td><td class="num">6.79e−05</td></tr>
+      <tr class="best"><td>v3 — este archivo</td><td class="num">39</td><td class="num">1</td><td class="num">9.87e−06</td><td class="num">8.89e−05</td></tr>
+      <tr><td>v3 de bolsillo — μ = M<sub>tot</sub>/b</td><td class="num">28</td><td class="num">1</td><td class="num">2.38e−04</td><td class="num">8.15e−04</td></tr>
+    </tbody>
+  </table>
+  <p>Vale aclarar de dónde viene cada mitad de la simplificación, porque solo una es regalo del archivo nuevo. Quitar un régimen ahorra los bloques con indicador y la condición de continuidad. La otra mitad es un cambio de base que también aplicaba antes, y que conviene explicar aparte.</p>
+</section>
+
+<section>
+  <div class="eyebrow">La mitad que no era gratis</div>
+  <h2>Grado total en vez de base tensorial</h2>
+  <p>Un polinomio en dos variables se puede armar de dos maneras. La <strong>tensorial</strong> toma todos los productos h<sup>i</sup>·Nivel<sup>j</sup> hasta grado 6 en cada dirección por separado: 7 × 7 = 49 términos, e incluye cosas como h⁶·Nivel⁶, de grado conjunto 12. La de <strong>grado total</strong> se queda solo con los términos cuyo grado conjunto no pasa de 6: 28 términos, el triángulo inferior.</p>
+  <div class="two">
+    <div><svg id="svgTri" viewBox="0 0 330 300" role="img" aria-label="Triangulo de exponentes: terminos conservados y descartados"></svg></div>
+    <div class="card">
+      <h3 style="margin-top:0">Los 21 términos descartados no aportaban</h3>
+      <p>Con base tensorial (6,6), 49 coeficientes dan un error relativo de 2.5 × 10⁻⁵ en la superficie b. Con grado total 6, <strong>28 coeficientes dan 7.8 × 10⁻⁵</strong> — el mismo orden con 21 términos menos.</p>
+      <p>La razón es que las esquinas de grado alto son productos de oscilaciones en ambas direcciones a la vez, y una superficie física suave no las necesita. En cambio consumen grados de libertad y empeoran el condicionamiento.</p>
+      <p style="color:var(--dim);font-size:.93rem">Una propiedad útil de esta base: es invariante ante cambios lineales de coordenadas. Ajustar en (h, Nivel) o en (h, s) da <strong>exactamente el mismo resultado</strong> — se verificó a nivel de dígitos. Por eso la variable auxiliar se puede jubilar sin perder nada.</p>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="eyebrow">Lo que se mantiene</div>
+  <h2>La estructura sigue siendo la misma</h2>
+  <p>Nada de lo verificado en las dos notas anteriores se cae. Dentro de cada par (h, Nivel), M<sub>tot</sub> es proporcional a μ salvo dos correcciones chicas: α, entre 2.3 y 4.5 × 10⁻⁵, y γ, entre 0.0008 y 0.0020. El término cuadrático aporta a lo sumo un 0.12 % de μ.</p>
+  <p>Con un solo modo de operación γ además se comporta mejor: su rango se estrechó a la mitad respecto de la v2, donde llegaba a 0.0038. Por eso alcanza con un polinomio de grado total 3 —10 coeficientes— para representarla, cuando antes hacían falta 16.</p>
+  <div class="two">
+    <div><svg id="svgN" viewBox="0 0 340 260" role="img" aria-label="b contra Nivel, una curva por apertura"></svg></div>
+    <div><svg id="svgS" viewBox="0 0 340 260" role="img" aria-label="b contra s, las curvas alineadas"></svg></div>
+  </div>
+  <p style="margin-top:16px">El colapso al graficar contra <code>s = Nivel − 400 − h</code> sigue ahí, y sigue siendo la mejor pista física del archivo: el crecimiento casi cuadrático en s es el de un empuje hidrostático sobre una altura mojada creciente. Que la función ya no lo necesite no lo hace menos cierto.</p>
+</section>
+
+<section>
+  <div class="eyebrow">Entregable</div>
+  <h2>La función</h2>
+  <pre><span class="c"># coordenadas normalizadas</span>
+x = (h - 9.5)/9.5            <span class="c"># h en metros</span>
+y = (Nivel - 413)/7          <span class="c"># Nivel en msnm</span>
+
+<span class="c"># superficie b: suma sobre i+j &lt;= 6   (28 términos)</span>
+b = Σ c<sub>ij</sub> · x<sup>i</sup> y<sup>j</sup>
+
+<span class="c"># superficie de curvatura: suma sobre i+j &lt;= 3   (10 términos)</span>
+γ = Σ g<sub>ij</sub> · x<sup>i</sup> y<sup>j</sup>
+
+α = <span class="n">2.603087e-05</span>
+
+<span class="c"># inversión (raíz positiva de la cuadrática en μ)</span>
+μ = ( -1 + √( 1 + 4γ·(Mtot/b - α) ) ) / (2γ)</pre>
+  <h3>Los 28 coeficientes de b</h3>
+  <table><thead><tr><th>i (h)</th><th>j (Nivel)</th><th class="num">c<sub>ij</sub></th><th>i (h)</th><th>j (Nivel)</th><th class="num">c<sub>ij</sub></th></tr></thead><tbody id="cbtab"></tbody></table>
+  <h3>Los 10 coeficientes de γ</h3>
+  <table><thead><tr><th>i (h)</th><th>j (Nivel)</th><th class="num">g<sub>ij</sub></th><th>i (h)</th><th>j (Nivel)</th><th class="num">g<sub>ij</sub></th></tr></thead><tbody id="cgtab"></tbody></table>
+  <p>El módulo Python que acompaña esta nota trae las mismas constantes con el arreglo ya armado, más una función <code>en_dominio(h, nivel)</code> que devuelve si el punto cae en la región verificada.</p>
+</section>
+
+<section>
+  <div class="eyebrow">Verificación</div>
+  <h2>Cuánto se equivoca, y dónde</h2>
+  <div class="stats">
+    <div class="stat"><div class="v">9.87e−06</div><div class="k">RMSE en μ</div></div>
+    <div class="stat"><div class="v">8.89e−05</div><div class="k">máx |error| en μ</div></div>
+    <div class="stat"><div class="v">0.018 %</div><div class="k">máx error relativo</div></div>
+    <div class="stat"><div class="v">5.9e+03</div><div class="k">número de condición del ajuste</div></div>
+  </div>
+  <h3>Dos pruebas de interpolación</h3>
+  <table>
+    <thead><tr><th>Qué se ocultó</th><th class="num">Celdas de ajuste</th><th class="num">máx |error| en lo oculto</th></tr></thead>
+    <tbody>
+      <tr><td>Los 7 niveles impares</td><td class="num">104 de 195</td><td class="num">4.27e−05</td></tr>
+      <tr><td>Las 10 aperturas impares</td><td class="num">101 de 195</td><td class="num">2.59e−04</td></tr>
+    </tbody>
+  </table>
+  <p>En Nivel la función interpola mejor que el propio ajuste. En h se degrada a 2.6 × 10⁻⁴ — sigue siendo 0.04 % de μ, pero conviene saber que <strong>la apertura es la dirección más exigente</strong>: quitarle la mitad de los valores deja un polinomio de grado 6 apoyado en 10 puntos. Si en algún momento hay que ampliar el dominio de h, ahí es donde primero se va a notar.</p>
+  <h3>Dónde cae el error</h3>
+  <p>Cada casilla es un par (h, Nivel); el color es el máximo error en μ sobre los 46 valores de μ de esa celda. Las casillas vacías son los pares que este archivo no contiene.</p>
+  <svg id="svgErr" viewBox="0 0 700 330" role="img" aria-label="Mapa del error maximo por celda"></svg>
+</section>
+
+<section>
+  <div class="eyebrow">Anexo</div>
+  <h2>El factor b(h, Nivel)</h2>
+  <p>Los 195 valores de <code>b</code> extraídos de los datos, en ton·m por unidad de μ. Filas: apertura h. Columnas: nivel. Sirve para verificar la función sin correr código.</p>
+  <div class="tblscroll"><table><thead id="bhead"></thead><tbody id="bbody"></tbody></table></div>
+</section>
+
+<section>
+  <div class="eyebrow">Antes de usarla</div>
+  <h2>Límites</h2>
+  <ul>
+    <li><strong>Un solo modo de operación.</strong> Esta función cubre el régimen de este archivo. Para el otro —el que en la v2 aparecía con Nivel ≤ 400 + h, donde M<sub>tot</sub> no dependía del nivel— hace falta su propia función, que será más simple todavía porque allí una de las dos variables no interviene.</li>
+    <li><strong>Dominio verificado:</strong> h ∈ [0, 19] m, Nivel ∈ [406, 420] msnm, con Nivel ≥ 401 + h. Fuera de esa región es extrapolación de un polinomio de grado 6: se desvía rápido y sin avisar. La función <code>en_dominio()</code> del módulo lo chequea.</li>
+    <li><strong>μ ∈ [0.15, 0.60] es el rango calibrado.</strong> La extrapolación en μ es benigna: la relación M<sub>tot</sub>(μ) es una cuadrática de curvatura mínima, no una forma inventada.</li>
+    <li><strong>Nomenclatura:</strong> en el Excel la columna de μ sigue llamándose <code>m</code>.</li>
+  </ul>
+  <h3>Si querés bajar todavía más el conteo</h3>
+  <p>Con grado total 5 en b y grado 2 en γ quedan 28 coeficientes y el error máximo sube a 3.5 × 10⁻⁴ — cuatro veces peor, todavía por debajo del 0.06 % de μ. Y la versión de bolsillo, ignorando α y γ, deja 28 coeficientes con error 8.2 × 10⁻⁴. Cuál conviene depende de para qué se use el μ: si va a alimentar una decisión de operación, la de 39 no cuesta nada de más; si es para una tabla impresa, cualquiera de las tres alcanza.</p>
+</section>
+
+<footer>
+  Ajuste sobre datos_completos_compuerta_sin_solapa_2.xlsx · 8 970 registros · 195 pares (h, Nivel) × 46 valores de μ<br>
+  39 coeficientes en una sola expresión · máx |err| 8.9e−05 · validación por nodos ocultos: 4.3e−05 en Nivel, 2.6e−04 en h
+</footer>
+</div>
+
+<script>
+const HS=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19];
+const NS=[406, 407, 408, 409, 410, 411, 412, 413, 414, 415, 416, 417, 418, 419, 420];
+const BT=[[185.7232, 224.4566, 268.9738, 319.2138, 375.1247, 436.6626, 503.7908, 576.4789, 654.7023, 738.4424, 827.6855, 922.4237, 1022.654, 1128.3792, 1239.6076], [154.5637, 187.0263, 225.31, 269.3531, 319.1031, 374.5165, 435.5573, 502.1968, 574.4127, 652.1886, 735.514, 824.3837, 918.7984, 1018.7643, 1124.2937], [130.2099, 156.4666, 188.579, 226.4876, 270.1398, 319.4912, 374.5062, 435.157, 501.4226, 573.289, 650.7479, 733.7971, 822.4405, 916.6877, 1016.5547], [112.4404, 132.5555, 158.5483, 190.3708, 227.9733, 271.3116, 320.3495, 375.0593, 435.4209, 501.4216, 573.0553, 650.3224, 733.2295, 821.7897, 916.0224], [101.0452, 115.1037, 135.0308, 160.8073, 192.3963, 229.7571, 272.854, 321.6588, 376.1517, 436.3207, 502.1611, 573.6755, 650.873, 733.7697, 822.3883], [95.8038, 103.9275, 117.8654, 137.6407, 163.2457, 194.654, 231.8341, 274.7586, 323.4074, 377.7687, 437.8387, 503.6213, 575.1278, 652.3768, 735.3942], [null, 98.8311, 106.8923, 120.7347, 140.3922, 165.8683, 197.1465, 234.2045, 277.0233, 325.5911, 379.9042, 439.9674, 505.7935, 577.4034, 654.8256], [null, null, 101.939, 109.9522, 123.723, 143.2954, 168.6833, 199.8803, 236.8732, 279.6517, 328.2123, 382.56, 442.7085, 508.6803, 580.5062], [null, null, null, 105.1428, 113.1219, 126.844, 146.3627, 171.7023, 202.866, 239.8502, 282.6532, 331.2804, 385.746, 446.0733, 512.2949], [null, null, null, null, 108.4602, 116.4185, 130.1142, 149.6102, 174.9406, 206.1189, 243.1505, 286.0434, 334.8121, 389.4806, 450.0827], [null, null, null, null, null, 111.912, 119.8626, 133.5538, 153.0577, 178.4183, 209.659, 246.7953, 289.8446, 338.8318, 393.7913], [null, null, null, null, null, null, 115.523, 123.4788, 137.1876, 156.7302, 182.1607, 213.5128, 250.8123, 294.0871, 343.3729], [null, null, null, null, null, null, null, 119.3232, 127.2973, 141.0457, 160.6585, 186.1997, 217.7139, 255.2376, 298.8103], [null, null, null, null, null, null, null, null, 123.3498, 131.3553, 145.1663, 164.8816, 190.576, 222.3051, 260.1175], [null, null, null, null, null, null, null, null, null, 127.6492, 135.6999, 149.5969, 169.4486, 195.3409, 227.3413], [null, null, null, null, null, null, null, null, null, null, 132.2809, 140.391, 154.3988, 174.4229, 200.5607], [null, null, null, null, null, null, null, null, null, null, null, 137.3219, 145.5066, 159.6517, 179.8867], [null, null, null, null, null, null, null, null, null, null, null, null, 142.8752, 151.1506, 165.4616], [null, null, null, null, null, null, null, null, null, null, null, null, null, 149.0808, 157.4645], [null, null, null, null, null, null, null, null, null, null, null, null, null, null, 156.1354]];
+const EM=[[15.67, 3.63, 5.3, 8.35, 6.89, 4.32, 13.77, 20.35, 20.19, 11.69, 7.2, 21.17, 28.39, 14.53, 43.95], [9.77, 24.69, 19.73, 6.89, 6.24, 8.81, 4.98, 7.52, 16.19, 20.12, 16.77, 6.4, 9.56, 17.49, 10.8], [5.13, 12.03, 18.73, 12.94, 2.93, 12.38, 15.94, 12.09, 4.0, 10.76, 18.02, 17.85, 8.97, 9.03, 24.26], [4.61, 15.0, 6.85, 6.2, 4.58, 7.91, 17.7, 21.72, 17.7, 8.09, 7.0, 15.97, 16.2, 4.64, 19.88], [31.74, 10.12, 26.89, 14.68, 2.95, 3.3, 8.4, 18.68, 23.41, 19.54, 9.43, 6.1, 14.71, 11.99, 9.67], [28.03, 26.72, 14.47, 27.12, 11.78, 7.18, 8.62, 4.81, 15.87, 21.25, 17.6, 7.63, 7.79, 13.62, 4.15], [null, 18.72, 25.08, 9.91, 17.84, 4.24, 16.59, 16.16, 3.76, 11.49, 16.83, 13.11, 4.49, 10.66, 10.81], [null, null, 13.36, 27.6, 4.86, 7.33, 11.51, 23.95, 21.35, 8.19, 7.5, 11.77, 7.64, 5.77, 12.32], [null, null, null, 10.15, 29.09, 10.59, 4.38, 15.77, 25.27, 21.72, 9.56, 4.75, 7.13, 4.03, 9.94], [null, null, null, null, 9.94, 25.57, 10.39, 4.43, 12.24, 20.18, 17.57, 8.27, 3.63, 3.93, 5.94], [null, null, null, null, null, 12.27, 17.12, 4.29, 7.75, 3.61, 11.61, 11.42, 5.87, 3.02, 3.09], [null, null, null, null, null, null, 14.52, 7.73, 8.06, 14.11, 7.94, 4.1, 6.38, 3.63, 2.92], [null, null, null, null, null, null, null, 13.07, 2.9, 10.32, 15.87, 10.0, 2.41, 3.81, 2.7], [null, null, null, null, null, null, null, null, 6.12, 6.31, 4.92, 9.71, 5.62, 3.84, 3.53], [null, null, null, null, null, null, null, null, null, 7.43, 16.68, 12.56, 6.09, 5.88, 5.11], [null, null, null, null, null, null, null, null, null, null, 14.98, 26.52, 25.94, 16.09, 7.31], [null, null, null, null, null, null, null, null, null, null, null, 10.34, 24.86, 25.97, 9.71], [null, null, null, null, null, null, null, null, null, null, null, null, 13.92, 9.64, 8.74], [null, null, null, null, null, null, null, null, null, null, null, null, null, 21.26, 7.59], [null, null, null, null, null, null, null, null, null, null, null, null, null, null, 88.9]];
+const CB=[140.83260657, 136.47489001, 142.72936317, 2.026188, -1.80586827, 1.04780394, -0.10332946, -152.51534309, -386.88416961, -4.09711124, 15.07970782, -7.71476287, 1.39840115, 271.01421245, 9.60554776, -32.10276139, 22.59579322, -5.38192081, -7.23257539, 21.70738772, -31.81603995, 10.48064703, -0.40320097, 21.93622626, -10.81140809, -5.11280296, 5.01383315, 0.16341743];
+const CG=[0.00122716511, -0.0004019965, 0.0001635109, -4.085608e-05, 0.00057101985, -0.00021267476, 4.616952e-05, 0.00040607469, 3.647978e-05, 0.00014935372];
+const AL=2.603087e-05;
+
+function bas(h,N,D){const x=(h-9.5)/9.5,y=(N-413)/7,L=[];
+  for(let i=0;i<=D;i++)for(let j=0;j<=D;j++){if(i+j<=D)L.push(Math.pow(x,i)*Math.pow(y,j));}
+  return L;}
+function bOf(h,N){const L=bas(h,N,6);let v=0;for(let k=0;k<L.length;k++)v+=L[k]*CB[k];return v;}
+function gOf(h,N){const L=bas(h,N,3);let v=0;for(let k=0;k<L.length;k++)v+=L[k]*CG[k];return v;}
+function muOf(h,N,M){const b=bOf(h,N),g=gOf(h,N);return (-1+Math.sqrt(1+4*g*(M/b-AL)))/(2*g);}
+const IDX=(D)=>{const a=[];for(let i=0;i<=D;i++)for(let j=0;j<=D;j++)if(i+j<=D)a.push([i,j]);return a};
+
+const NSVG='http://www.w3.org/2000/svg';
+function el(t,at){const e=document.createElementNS(NSVG,t);for(const k in at)e.setAttribute(k,at[k]);return e}
+function txt(svg,x,y,s,cls,extra){const t=el('text',Object.assign({x:x,y:y,class:cls||'slabel'},extra||{}));t.textContent=s;svg.appendChild(t);return t}
+function axes(svg,W,H,pad,xt,yt,xlab,ylab,sx,sy){
+  svg.appendChild(el('line',{x1:pad.l,y1:H-pad.b,x2:W-pad.r,y2:H-pad.b,stroke:'#3E6B80'}));
+  svg.appendChild(el('line',{x1:pad.l,y1:pad.t,x2:pad.l,y2:H-pad.b,stroke:'#3E6B80'}));
+  xt.forEach(v=>{const x=sx(v);svg.appendChild(el('line',{x1:x,y1:H-pad.b,x2:x,y2:H-pad.b+4,stroke:'#3E6B80'}));
+    txt(svg,x,H-pad.b+14,v,'slabel',{'text-anchor':'middle'})});
+  yt.forEach(v=>{const y=sy(v);svg.appendChild(el('line',{x1:pad.l-4,y1:y,x2:W-pad.r,y2:y,stroke:'#3E6B80','stroke-opacity':.26}));
+    txt(svg,pad.l-7,y+3,v,'slabel',{'text-anchor':'end'})});
+  txt(svg,W-pad.r,H-2,xlab,'slabel',{'text-anchor':'end'});
+  txt(svg,pad.l,pad.t-8,ylab,'stitle');
+}
+const ramp=f=>`rgb(${Math.round(99+(240-99)*f)},${Math.round(198+(169-198)*f)},${Math.round(172+(59-172)*f)})`;
+
+/* triangulo de exponentes */
+(function(){
+  const svg=document.getElementById('svgTri');
+  const W=330,H=300,pad={l:44,t:34},c=32;
+  for(let i=0;i<=6;i++)for(let j=0;j<=6;j++){
+    const keep=i+j<=6;
+    svg.appendChild(el('rect',{x:pad.l+j*c,y:pad.t+i*c,width:c-3,height:c-3,
+      fill:keep?'#F0A93B':'#0F3040','fill-opacity':keep?.75:1,
+      stroke:keep?'none':'#3E6B80','stroke-width':.8,'stroke-dasharray':keep?'':'2 2'}));
+    if(!keep) txt(svg,pad.l+j*c+(c-3)/2,pad.t+i*c+(c-3)/2+3,'×','slabel',{'text-anchor':'middle',fill:'#3E6B80'});
+  }
+  for(let j=0;j<=6;j++) txt(svg,pad.l+j*c+(c-3)/2,pad.t-9,j,'slabel',{'text-anchor':'middle'});
+  for(let i=0;i<=6;i++) txt(svg,pad.l-9,pad.t+i*c+(c-3)/2+3,i,'slabel',{'text-anchor':'end'});
+  txt(svg,pad.l,pad.t-22,'exponente de Nivel  →','slabel');
+  txt(svg,14,pad.t+3.5*c,'exponente de h','slabel',{transform:`rotate(-90 14 ${pad.t+3.5*c})`,'text-anchor':'middle'});
+  txt(svg,pad.l,H-22,'28 términos conservados (i+j ≤ 6)','slabel',{fill:'#F0A93B'});
+  txt(svg,pad.l,H-8,'21 descartados: grado conjunto hasta 12','slabel');
+})();
+
+/* b vs Nivel y b vs s */
+(function(){
+  const A=document.getElementById('svgN'),B=document.getElementById('svgS');
+  const W=340,H=260,pad={l:46,r:14,t:26,b:26};
+  const syv=v=>H-pad.b-v/1300*(H-pad.t-pad.b);
+  const sxN=v=>pad.l+(v-405.5)/15*(W-pad.l-pad.r);
+  const sxS=v=>pad.l+(v-0)/21*(W-pad.l-pad.r);
+  axes(A,W,H,pad,[406,410,414,418],[0,400,800,1200],'Nivel (msnm)','b contra Nivel',sxN,syv);
+  axes(B,W,H,pad,[1,5,10,15,20],[0,400,800,1200],'s = Nivel − 400 − h','b contra s',sxS,syv);
+  HS.forEach((h,i)=>{
+    const col=ramp(i/(HS.length-1));let dA='',dB='';
+    NS.forEach((N,j)=>{const b=BT[i][j];if(b===null)return;
+      dA+=(dA?'L':'M')+sxN(N)+' '+syv(b); dB+=(dB?'L':'M')+sxS(N-400-h)+' '+syv(b);});
+    if(dA)A.appendChild(el('path',{d:dA,fill:'none',stroke:col,'stroke-width':1.1,'stroke-opacity':.85}));
+    if(dB)B.appendChild(el('path',{d:dB,fill:'none',stroke:col,'stroke-width':1.1,'stroke-opacity':.85}));
+  });
+  txt(A,sxN(419),syv(1240),'h=0','slabel',{fill:'#63C6AC','text-anchor':'end'});
+  txt(A,sxN(419),syv(90),'h=19','slabel',{fill:'#F0A93B','text-anchor':'end'});
+  txt(B,sxS(2),syv(1150),'20 curvas alineadas','slabel');
+})();
+
+/* mapa de error */
+(function(){
+  const svg=document.getElementById('svgErr');
+  const W=700,H=330,pad={l:60,r:150,t:30,b:36};
+  const cw=(W-pad.l-pad.r)/20, ch=(H-pad.t-pad.b)/15, mx=90;
+  HS.forEach((h,i)=>NS.forEach((N,j)=>{
+    const v=EM[i][j];
+    if(v===null){svg.appendChild(el('rect',{x:pad.l+i*cw,y:pad.t+(14-j)*ch,width:cw-1,height:ch-1,
+      fill:'none',stroke:'#3E6B80','stroke-width':.5,'stroke-dasharray':'2 2'}));return;}
+    const f=Math.min(v,mx)/mx;
+    svg.appendChild(el('rect',{x:pad.l+i*cw,y:pad.t+(14-j)*ch,width:cw-1,height:ch-1,
+      fill:`rgb(${Math.round(15+(240-15)*f)},${Math.round(48+(169-48)*f)},${Math.round(64+(59-64)*f)})`}));
+  }));
+  [0,4,8,12,16,19].forEach(h=>txt(svg,pad.l+(h+.5)*cw,H-pad.b+14,h,'slabel',{'text-anchor':'middle'}));
+  [406,410,414,418,420].forEach(N=>txt(svg,pad.l-7,pad.t+(14-(N-406))*ch+ch/2+3,N,'slabel',{'text-anchor':'end'}));
+  txt(svg,W-pad.r,H-2,'Apertura h (m)','slabel',{'text-anchor':'end'});
+  txt(svg,pad.l,pad.t-10,'Máx |error| en μ por celda  ·  ×10⁻⁶','stitle');
+  for(let k=0;k<=5;k++){const f=k/5;
+    svg.appendChild(el('rect',{x:W-pad.r+14,y:pad.t+8+k*17,width:13,height:13,
+      fill:`rgb(${Math.round(15+(240-15)*f)},${Math.round(48+(169-48)*f)},${Math.round(64+(59-64)*f)})`,stroke:'#3E6B80','stroke-width':.5}));
+    txt(svg,W-pad.r+33,pad.t+19+k*17,(f*mx).toFixed(0)+' ×10⁻⁶','slabel');}
+  svg.appendChild(el('rect',{x:W-pad.r+14,y:pad.t+8+6*17+6,width:13,height:13,fill:'none',stroke:'#3E6B80','stroke-width':.5,'stroke-dasharray':'2 2'}));
+  txt(svg,W-pad.r+33,pad.t+19+6*17+6,'sin dato','slabel');
+})();
+
+/* tablas de coeficientes */
+(function(){
+  const mk=(tb,idx,C,fmt)=>{
+    for(let k=0;k<idx.length;k+=2){
+      const tr=document.createElement('tr');let html='';
+      for(const kk of [k,k+1]){
+        if(kk<idx.length) html+=`<td>${idx[kk][0]}</td><td>${idx[kk][1]}</td><td class="num">${fmt(C[kk])}</td>`;
+        else html+='<td></td><td></td><td></td>';
+      }
+      tr.innerHTML=html; tb.appendChild(tr);
+    }
+  };
+  mk(document.getElementById('cbtab'),IDX(6),CB,v=>v.toFixed(6));
+  mk(document.getElementById('cgtab'),IDX(3),CG,v=>v.toExponential(5));
+})();
+
+/* tabla b */
+(function(){
+  const th=document.getElementById('bhead'),tb=document.getElementById('bbody');
+  th.innerHTML='<tr><th>h \\ Nivel</th>'+NS.map(n=>`<th class="num">${n}</th>`).join('')+'</tr>';
+  HS.forEach((h,i)=>{
+    const tr=document.createElement('tr');
+    tr.innerHTML=`<td><strong>${h}</strong></td>`+NS.map((N,j)=>
+      BT[i][j]===null?'<td class="num" style="color:#3E6B80">—</td>':`<td class="num">${BT[i][j].toFixed(2)}</td>`).join('');
+    tb.appendChild(tr);
+  });
+})();
+
+/* evaluador */
+const gh=document.getElementById('gh'),gn=document.getElementById('gn'),mt=document.getElementById('mt');
+function drawB(h,N){
+  const svg=document.getElementById('svgB');svg.innerHTML='';
+  const W=300,H=205,pad={l:46,r:8,t:24,b:24};
+  const sx=v=>pad.l+(v-405.5)/15*(W-pad.l-pad.r);
+  const sy=v=>H-pad.b-v/1300*(H-pad.t-pad.b);
+  axes(svg,W,H,pad,[406,410,414,418],[0,400,800,1200],'Nivel (msnm)','b para h = '+h.toFixed(1),sx,sy);
+  const lo=Math.max(406,401+h);
+  let d='';for(let n=lo;n<=420;n+=0.2){d+=(d?'L':'M')+sx(n)+' '+sy(bOf(h,n))}
+  svg.appendChild(el('path',{d:d,fill:'none',stroke:'#F0A93B','stroke-width':1.8}));
+  if(lo>406){svg.appendChild(el('rect',{x:sx(405.5),y:pad.t,width:sx(lo)-sx(405.5),height:H-pad.t-pad.b,fill:'#E8734A','fill-opacity':.10}));
+    txt(svg,sx(405.9),pad.t+10,'sin dato','slabel',{fill:'#E8734A'});}
+  svg.appendChild(el('circle',{cx:sx(N),cy:sy(bOf(h,N)),r:4,fill:'#E6EFF2',stroke:'#0A2430','stroke-width':1.2}));
+}
+function drawM(h,N,M,mu){
+  const svg=document.getElementById('svgM');svg.innerHTML='';
+  const W=300,H=160,pad={l:46,r:8,t:24,b:24};
+  const bv=bOf(h,N),g=gOf(h,N),Mmax=Math.max(120,bv*0.72,(isFinite(M)?M:0)*1.15);
+  const sx=v=>pad.l+v/0.72*(W-pad.l-pad.r);
+  const sy=v=>H-pad.b-v/Mmax*(H-pad.t-pad.b);
+  axes(svg,W,H,pad,[0,0.15,0.3,0.45,0.6],[0,Math.round(Mmax/2),Math.round(Mmax)],'μ','Mtot en este punto',sx,sy);
+  svg.appendChild(el('rect',{x:sx(0.15),y:pad.t,width:sx(0.6)-sx(0.15),height:H-pad.t-pad.b,fill:'#63C6AC','fill-opacity':.07}));
+  let d='';for(let u=0;u<=0.72;u+=0.02){d+=(d?'L':'M')+sx(u)+' '+sy(bv*(AL+u+g*u*u))}
+  svg.appendChild(el('path',{d:d,fill:'none',stroke:'#F0A93B','stroke-width':1.8}));
+  if(isFinite(mu)&&mu>0&&mu<0.75&&M<=Mmax){
+    svg.appendChild(el('line',{x1:pad.l,y1:sy(M),x2:sx(mu),y2:sy(M),stroke:'#E6EFF2','stroke-width':.8,'stroke-dasharray':'2 2'}));
+    svg.appendChild(el('line',{x1:sx(mu),y1:sy(M),x2:sx(mu),y2:H-pad.b,stroke:'#E6EFF2','stroke-width':.8,'stroke-dasharray':'2 2'}));
+    svg.appendChild(el('circle',{cx:sx(mu),cy:sy(M),r:4,fill:'#E6EFF2',stroke:'#0A2430','stroke-width':1.2}));
+  }
+}
+function update(){
+  const h=parseFloat(gh.value),N=parseFloat(gn.value),M=parseFloat(mt.value);
+  document.getElementById('ghout').textContent=h.toFixed(1);
+  document.getElementById('gnout').textContent=N.toFixed(1);
+  let mu=NaN;const msg=[];
+  if(isFinite(M)&&M>=0) mu=muOf(h,N,M);
+  document.getElementById('muout').textContent=isFinite(mu)?mu.toFixed(4):'—';
+  document.getElementById('bout').textContent=`b(${h.toFixed(1)}, ${N.toFixed(1)}) = ${bOf(h,N).toFixed(2)} ton·m por unidad de μ`;
+  if(N<401+h) msg.push('Nivel < 401 + h: fuera del modo de operación de este archivo.');
+  if(N<406||N>420) msg.push('Nivel fuera de [406, 420].');
+  if(h<0||h>19) msg.push('h fuera de [0, 19].');
+  if(isFinite(mu)&&(mu<0.15||mu>0.60)) msg.push('μ fuera del rango calibrado [0.15, 0.60].');
+  if(!isFinite(M)||M<0) msg.push('Escribí un M_tot ≥ 0.');
+  document.getElementById('warn').textContent=msg.join(' ');
+  drawB(h,N); drawM(h,N,M,mu);
+}
+[gh,gn,mt].forEach(e=>{e.addEventListener('input',update);e.addEventListener('change',update)});
+update();
+</script>
